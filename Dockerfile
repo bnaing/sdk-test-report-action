@@ -1,6 +1,5 @@
-FROM python:3.7.5-slim
+FROM python:3.11.0
 
-RUN pip install PyGithub
 COPY entrypoint.py /entrypoint.py
 
 ENTRYPOINT python /entrypoint.py
