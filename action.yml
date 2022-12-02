@@ -1,14 +1,11 @@
 name: Android SDK Repository and Use Case test report
+description: test report
 author: bnaing
+
 branding:
   icon: 'git-pull-request'
   color: 'green'
-description: test report
-inputs:
-  github-token:
-    description: GitHub Token
-    required: false
-    default: '${{github.token}}'
+
 runs:
   using: 'docker'
   image: 'Dockerfile'
