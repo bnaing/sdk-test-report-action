@@ -1,4 +1,6 @@
-FROM python:3.11.0
+FROM ubuntu:18.04
+
+RUN apt-get update && apt-get install -qy python
 
 COPY entrypoint.py /entrypoint.py
 
