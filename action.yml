@@ -7,7 +7,7 @@ description: test report
 inputs:
   github-token:
     description: GitHub Token
-    required: true
+    required: false
     default: '${{github.token}}'
 runs:
   using: 'docker'
