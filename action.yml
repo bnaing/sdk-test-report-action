@@ -1,6 +1,6 @@
-name: Android SDK Repository and Use Case test report
-description: test report
-author: bnaing
+name: 'Android SDK Repository and Use Case test report'
+description: 'test report'
+author: 'bnaing'
 
 branding:
   icon: 'git-pull-request'
