@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
@@ -77,9 +78,10 @@ def main():
 
     failedTests = traverse(repo, uc)
 
-    print(repo)
-    print(uc)
-    print(failedTests)
+    with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
+        print(f'REPO={repo}', file=fh)
+        print(f'USECASE={uc}', file=fh)
+        print(f'FAILED={failedTests}', file=fh)
 
 
 if __name__ == "__main__":
