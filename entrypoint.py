@@ -9,27 +9,30 @@ class ResultCount:
     skipped = 0
     failed = 0
     errors = 0
+    successRate = 0
 
     def __init__(self, title: str) -> None:
         self.title = title
 
     def __repr__(self) -> str:
-        return f"{self.title} - total={self.total}, skipped={self.skipped}, failed={self.failed}, errors={self.errors}"
+        return f"{self.title} {self.successRate}% \ntotal={self.total}, skipped={self.skipped}, failed={self.failed}, errors={self.errors}"
+
+    def calculateSuccessRate(self):
+        success = self.total - (self.failed + self.errors)
+        self.successRate = round(success * 100 / self.total)
 
 
 class FailedTest:
-    methodName = ""
-    className = ""
-
-    def __init__(self, methodName: str, className: str) -> None:
-        self.methodName = methodName
-        self.className = className
+    errors = []
 
     def __repr__(self) -> str:
-        return f"`{self.methodName}` in {self.className}"
+        return ''.join(self.errors)
+
+    def add(self, methodName: str, className: str):
+        self.errors.append(f"\n{methodName} in {className}")
 
 
-def parse(path, rc: ResultCount) -> FailedTest:
+def parse(path, rc: ResultCount, failed: FailedTest):
     tree = ET.parse(path)
     root = tree.getroot()
     attributes = root.attrib
@@ -50,38 +53,37 @@ def parse(path, rc: ResultCount) -> FailedTest:
                 attrib = element.attrib
                 methodName = attrib["name"]
                 className = attrib["classname"].split(".")[-1]
-                return FailedTest(methodName, className)
+                failed.add(methodName, className)
 
 
-def traverse(repo: ResultCount, uc: ResultCount):
-    failedTests = []
-
+def traverse(repo: ResultCount, uc: ResultCount, failed: FailedTest):
     pathlist = Path().rglob("TEST-*.xml")
     for p in pathlist:
         path = str(p)
         if path.lower().endswith("repositorytest.xml"):
-            ft = parse(path, repo)
-            if ft != None:
-                failedTests.append(ft)
+            parse(path, repo, failed)
 
         elif path.lower().endswith("usecasetest.xml"):
-            ft = parse(path, uc)
-            if ft != None:
-                failedTests.append(ft)
-
-    return failedTests
+            parse(path, uc, failed)
 
 
 def main():
     repo = ResultCount("Repository")
     uc = ResultCount("Use Case")
+    failed = FailedTest()
 
-    failedTests = traverse(repo, uc)
+    traverse(repo, uc, failed)
 
-    with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
-        print(f'REPO={repo}', file=fh)
-        print(f'USECASE={uc}', file=fh)
-        print(f'FAILED={failedTests}', file=fh)
+    repo.calculateSuccessRate()
+    uc.calculateSuccessRate()
+
+    try:
+        with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
+            print(f'REPO={repo}', file=fh)
+            print(f'USECASE={uc}', file=fh)
+            print(f'FAILED={failed}', file=fh)
+    except:
+        pass
 
 
 if __name__ == "__main__":
