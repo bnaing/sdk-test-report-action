@@ -15,7 +15,7 @@ class ResultCount:
         self.title = title
 
     def __repr__(self) -> str:
-        return f"{self.title} {self.successRate}% \ntotal={self.total}, skipped={self.skipped}, failed={self.failed}, errors={self.errors}"
+        return f"{self.title} {self.successRate}% #total={self.total}, skipped={self.skipped}, failed={self.failed}, errors={self.errors}"
 
     def calculateSuccessRate(self):
         success = self.total - (self.failed + self.errors)
@@ -29,7 +29,7 @@ class FailedTest:
         return ''.join(self.errors)
 
     def add(self, methodName: str, className: str):
-        self.errors.append(f"\n{methodName} in {className}")
+        self.errors.append(f"{methodName} in {className}#")
 
 
 def parse(path, rc: ResultCount, failed: FailedTest):
