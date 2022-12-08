@@ -75,7 +75,7 @@ def traverse(repo: ResultCount, uc: ResultCount, failed: FailedTest):
             parse(path, uc, failed)
 
 
-def main(): 
+def main():
     repo = ResultCount("Repository")
     uc = ResultCount("Use Case")
     failed = FailedTest()
@@ -85,11 +85,12 @@ def main():
     repo.calculateSuccessRate()
     uc.calculateSuccessRate()
 
-    result = str(repo) + "##" + str(uc) + "##" + str(failed)
-    print(result)
+    result = "SDK Test Report#" + \
+        str(repo) + "##" + str(uc) + "##" + str(failed)
+
     try:
         with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
-            print(f'RESULT={repo}', file=fh)
+            print(f'RESULT={result}', file=fh)
     except:
         pass
 
