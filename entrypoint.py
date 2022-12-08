@@ -37,7 +37,7 @@ class FailedTest:
             return f"{title}#{errorsStr}"
 
     def add(self, methodName: str, className: str):
-        self.errors.append(f"{methodName} in {className}#")
+        self.errors.append(f":file: {methodName} in {className}#")
 
 
 def parse(path, rc: ResultCount, failed: FailedTest):
