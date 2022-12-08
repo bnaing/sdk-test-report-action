@@ -9,20 +9,20 @@ class ResultCount:
     skipped = 0
     failed = 0
     errors = 0
-    statusEmoji = ""
+    statusEmoji = ":cross_mark:"
     successRate = 0
 
     def __init__(self, title: str) -> None:
         self.title = title
 
     def __repr__(self) -> str:
-        return f"{self.statusEmoji} {self.title} - {self.successRate}% # total={self.total}, skipped={self.skipped}, failed={self.failed}, errors={self.errors}"
+        return f"{self.statusEmoji} {self.title} - {self.successRate}% #:pointing_right: total={self.total}, skipped={self.skipped}, failed={self.failed}, errors={self.errors}"
 
     def calculateSuccessRate(self):
         success = self.total - (self.failed + self.errors)
         self.successRate = round(success * 100 / self.total)
         if self.successRate == 100:
-            self.statusEmoji = ""
+            self.statusEmoji = ":check_mark:"
 
 
 class FailedTest:
@@ -32,7 +32,7 @@ class FailedTest:
         if len(self.errors) == 0:
             return ""
         else:
-            title = " Failed Test Cases"
+            title = ":smiling_tear: Failed Test Cases"
             errorsStr = ''.join(self.errors)
             return f"{title}#{errorsStr}"
 
@@ -75,7 +75,7 @@ def traverse(repo: ResultCount, uc: ResultCount, failed: FailedTest):
             parse(path, uc, failed)
 
 
-def main():
+def main(): 
     repo = ResultCount("Repository")
     uc = ResultCount("Use Case")
     failed = FailedTest()
@@ -85,8 +85,7 @@ def main():
     repo.calculateSuccessRate()
     uc.calculateSuccessRate()
 
-    result = "SDK Test Report#" + \
-        str(repo) + "##" + str(uc) + "##" + str(failed)
+    result = ":memo: SDK Test Report#" + str(repo) + "##" + str(uc) + "##" + str(failed)
 
     try:
         with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
