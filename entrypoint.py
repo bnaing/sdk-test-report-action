@@ -9,24 +9,32 @@ class ResultCount:
     skipped = 0
     failed = 0
     errors = 0
+    statusEmoji = "❌"
     successRate = 0
 
     def __init__(self, title: str) -> None:
         self.title = title
 
     def __repr__(self) -> str:
-        return f"{self.title} {self.successRate}% #total={self.total}, skipped={self.skipped}, failed={self.failed}, errors={self.errors}"
+        return f"{self.statusEmoji} {self.title} - {self.successRate}% #👉 total={self.total}, skipped={self.skipped}, failed={self.failed}, errors={self.errors}"
 
     def calculateSuccessRate(self):
         success = self.total - (self.failed + self.errors)
         self.successRate = round(success * 100 / self.total)
+        if self.successRate == 100:
+            self.statusEmoji = "✅"
 
 
 class FailedTest:
     errors = []
 
     def __repr__(self) -> str:
-        return ''.join(self.errors)
+        if len(self.errors) == 0:
+            return ""
+        else:
+            title = "🥲 Failed Test Cases"
+            errorsStr = ''.join(self.errors)
+            return f"{title}#{errorsStr}"
 
     def add(self, methodName: str, className: str):
         self.errors.append(f"{methodName} in {className}#")
@@ -67,7 +75,7 @@ def traverse(repo: ResultCount, uc: ResultCount, failed: FailedTest):
             parse(path, uc, failed)
 
 
-def main():
+def main(): 
     repo = ResultCount("Repository")
     uc = ResultCount("Use Case")
     failed = FailedTest()
@@ -77,11 +85,11 @@ def main():
     repo.calculateSuccessRate()
     uc.calculateSuccessRate()
 
+    result = str(repo) + "##" + str(uc) + "##" + str(failed)
+    print(result)
     try:
         with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
-            print(f'REPO={repo}', file=fh)
-            print(f'USECASE={uc}', file=fh)
-            print(f'FAILED={failed}', file=fh)
+            print(f'RESULT={repo}', file=fh)
     except:
         pass
 
