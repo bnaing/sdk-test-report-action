@@ -64,7 +64,7 @@ def parse(path, rc: ResultCount, failed: FailedTest):
                 failed.add(methodName, className)
 
 
-def traverse(repo: ResultCount, uc: ResultCount, failed: FailedTest):
+def traverse(repo: ResultCount, uc: ResultCount, other: ResultCount, failed: FailedTest):
     pathlist = Path().rglob("TEST-*.xml")
     for p in pathlist:
         path = str(p)
@@ -74,19 +74,27 @@ def traverse(repo: ResultCount, uc: ResultCount, failed: FailedTest):
         elif path.lower().endswith("usecasetest.xml"):
             parse(path, uc, failed)
 
+        else:
+            parse(path, other, failed)
 
-def main(): 
+
+def main():
     repo = ResultCount("Repository")
     uc = ResultCount("Use Case")
+    other = ResultCount("Others")
+
     failed = FailedTest()
 
-    traverse(repo, uc, failed)
+    traverse(repo, uc, other, failed)
 
     repo.calculateSuccessRate()
     uc.calculateSuccessRate()
+    other.calculateSuccessRate()
 
-    result = ":memo: SDK Test Report#" + str(repo) + "##" + str(uc) + "##" + str(failed)
+    result = ":memo: SDK Test Report#" + \
+        str(repo) + "##" + str(uc) + "##" + str(other) + "##" + str(failed)
 
+    print(result)
     try:
         with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
             print(f'SDK_TEST_REPORT={result}', file=fh)
